@@ -1,12 +1,12 @@
 import Prando from "prando";
 import { createNoise2D } from "simplex-noise";
-import type { Layout } from "./layout";
 
 const SEED = 1887;
 const DENSITY = 0.2;
 const BRIGHT = 0.9;
 const FAINT = 6.6;
 const SLOPE = 0.32;
+const TIERS = 4;
 const COOL = [0.82, 0.91, 1];
 const WHITE = [1, 0.97, 0.94];
 const WARM = [1, 0.86, 0.7];
@@ -16,30 +16,35 @@ const WANDER = 0.565;
 const PACE = 0.35;
 const GRAIN = 1.134;
 
-export const MOST = 140;
+export const REACH = 36;
 
-export type Star = { x: number; level: number; magnitude: number; color: number[]; index: number };
+export type Star = { x: number; y: number; magnitude: number; color: number[]; index: number };
 
 const seeded = new Prando(SEED);
 const noise = createNoise2D(() => seeded.next());
 
-export function scatter(wide: number, high: number, middle: number, { roofs, starReach, starFloor }: Layout) {
-  const random = new Prando(SEED);
-  const count = Math.min(MOST, Math.round((DENSITY * wide * high) / (starReach * starReach)));
+export function scatter(west: number, east: number, depth: number) {
   const stars: Star[] = [];
-  for (let index = 0; index < count; index++) {
-    // Every star takes four draws even when skipped so the others stay put.
-    const x = middle + wide * random.next(-0.5, 0.5);
-    const level = high * random.next();
-    const magnitude = Math.max(BRIGHT, FAINT + Math.log10(1 - random.next()) / SLOPE);
-    const warmth = random.next(-1, 1);
+  for (let tier = 0; tier < TIERS; tier++) {
+    const last = tier === TIERS - 1;
+    const share = (last ? 1 : 0.75) * 4 ** -tier;
+    const cell = REACH / Math.sqrt(DENSITY * share);
 
-    const under = roofs.filter((roof) => x > roof.from - starReach && x < roof.to + starReach).map((roof) => roof.top);
-    if (level <= Math.max(starFloor, ...under) + 0.9 * starReach) continue;
+    for (let column = Math.floor((west - REACH) / cell); column <= Math.floor((east + REACH) / cell); column++) {
+      for (let row = 0; row * cell <= depth + REACH; row++) {
+        const random = new Prando(`${SEED} ${tier} ${column} ${row}`);
+        const x = (column + random.next()) * cell;
+        const y = (row + random.next()) * cell;
+        const rank = 4 ** -tier * (last ? 1 - random.next() : 1 - 0.75 * random.next());
+        const magnitude = Math.max(BRIGHT, FAINT + Math.log10(rank) / SLOPE);
+        const warmth = random.next(-1, 1);
+        const index = random.nextInt(0, 9999);
 
-    const far = warmth < 0 ? COOL : WARM;
-    const color = WHITE.map((shade, band) => shade + (far[band] - shade) * Math.abs(warmth));
-    stars.push({ x, level, magnitude, color, index });
+        const far = warmth < 0 ? COOL : WARM;
+        const color = WHITE.map((shade, band) => shade + (far[band] - shade) * Math.abs(warmth));
+        stars.push({ x, y, magnitude, color, index });
+      }
+    }
   }
 
   return stars;

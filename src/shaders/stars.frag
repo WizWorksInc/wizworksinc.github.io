@@ -1,13 +1,11 @@
-uniform sampler2D sprite;
-varying vec2 vUv;
-flat varying vec3 vTint;
-flat varying float vFlux;
+uniform highp sampler3D profiles;
+uniform float layer;
+uniform float stride;
+flat varying vec2 vCenter;
+flat varying vec3 vEnergy;
 
 void main() {
-  vec3 code = texture2D(sprite, vUv).rgb;
-
-  // The sprite stores six decades of brightness as a log code.
-  vec3 light = pow(vec3(10.0), 6.0 * code - 6.0) * step(0.01, code);
-  vec3 seen = (1.0 - exp(-light * vFlux)) * vTint;
-  gl_FragColor = vec4(seen, max(seen.r, max(seen.g, seen.b)));
+  vec2 size = vec2(textureSize(profiles, 0).xy);
+  vec2 offset = gl_FragCoord.xy - vCenter;
+  gl_FragColor = vec4(vEnergy * texture(profiles, vec3(0.5 + offset / (size * stride), layer)).rgb, 0.0);
 }

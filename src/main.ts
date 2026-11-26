@@ -19,7 +19,7 @@ azoth?.addEventListener("pointerenter", ({ offsetX, offsetY }) => {
 const logo = document.querySelector<HTMLElement>(".logo");
 const narrow = matchMedia("(max-width: 760px) and (orientation: portrait)");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-const paper = createPaper();
+const paper = createPaper(paint);
 const stars = logo ? createStars(logo, paint) : undefined;
 const water = logo ? createWater(logo, paint) : undefined;
 let layout = WIDE;
@@ -43,10 +43,10 @@ function paint() {
   }
 
   paper?.(moonX, moonY);
-  if (reducedMotion.matches) {
-    stars?.draw(0);
-    water?.draw(0, false);
-  }
+
+  const still = reducedMotion.matches;
+  stars?.draw(still ? 0 : last / 1000);
+  water?.draw(still ? 0 : last / 1000, !still);
 }
 
 function animate(now: number) {

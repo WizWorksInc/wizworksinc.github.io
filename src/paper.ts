@@ -6,6 +6,7 @@ import fragmentShader from "./shaders/paper.frag";
 import vertexShader from "./shaders/paper.vert";
 
 const GLOW_STRENGTH = 0.3;
+const LIGHT = new Vector2(-1, -1).normalize();
 
 const oklab = useMode(modeOklab);
 
@@ -26,6 +27,8 @@ export function createPaper() {
     strength: { value: GLOW_STRENGTH },
     size: { value: new Vector2() },
     moon: { value: new Vector2() },
+    scale: { value: 1 },
+    light: { value: LIGHT },
   };
 
   const sheet = new Mesh(new PlaneGeometry(2, 2), new ShaderMaterial({ uniforms, vertexShader, fragmentShader: noise + fragmentShader }));
@@ -34,9 +37,11 @@ export function createPaper() {
   document.body.prepend(canvas);
 
   return (moonX: number, moonY: number) => {
-    resize(renderer, canvas.clientWidth, canvas.clientHeight);
+    const ratio = Math.min(2, devicePixelRatio);
+    resize(renderer, Math.round(canvas.clientWidth * ratio), Math.round(canvas.clientHeight * ratio));
     uniforms.size.value.set(canvas.width, canvas.height);
-    uniforms.moon.value.set(moonX, moonY);
+    uniforms.moon.value.set(moonX * ratio, moonY * ratio);
+    uniforms.scale.value = ratio;
     renderer.render(sheet, camera);
   };
 }

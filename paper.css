@@ -2,6 +2,7 @@
   --paper-top: #121317;
   --paper-bottom: #17181b;
   --paper-glow: #2f2d2b;
+  --paper-material: paper;
 }
 
 html {
@@ -16,6 +17,11 @@ html {
   height: 100%;
 }
 
+/* The shader draws embossed artwork. Opacity keeps its label where visibility would drop it. */
+[data-embossed] {
+  opacity: 0;
+}
+
 @media (forced-colors: active) {
   html {
     background: Canvas;
@@ -23,6 +29,10 @@ html {
 
   .paper {
     display: none;
+  }
+
+  [data-embossed] {
+    opacity: 1;
   }
 }
 
@@ -33,5 +43,9 @@ html {
 
   .paper {
     display: none;
+  }
+
+  [data-embossed] {
+    opacity: 1;
   }
 }
