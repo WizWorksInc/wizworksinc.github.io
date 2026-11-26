@@ -5,7 +5,6 @@ import noise from "./shaders/noise.glsl";
 import fragmentShader from "./shaders/paper.frag";
 import vertexShader from "./shaders/paper.vert";
 
-const GLOW = "#2f2d2b";
 const GLOW_STRENGTH = 0.3;
 
 const oklab = useMode(modeOklab);
@@ -23,7 +22,7 @@ export function createPaper() {
   const uniforms = {
     top: { value: lab(style.getPropertyValue("--paper-top")) },
     bottom: { value: lab(style.getPropertyValue("--paper-bottom")) },
-    glow: { value: lab(GLOW) },
+    glow: { value: lab(style.getPropertyValue("--paper-glow")) },
     strength: { value: GLOW_STRENGTH },
     size: { value: new Vector2() },
     moon: { value: new Vector2() },

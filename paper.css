@@ -1,0 +1,37 @@
+:root {
+  --paper-top: #121317;
+  --paper-bottom: #17181b;
+  --paper-glow: #2f2d2b;
+}
+
+html {
+  background: linear-gradient(var(--paper-top), var(--paper-bottom)) fixed;
+}
+
+.paper {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+@media (forced-colors: active) {
+  html {
+    background: Canvas;
+  }
+
+  .paper {
+    display: none;
+  }
+}
+
+@media print {
+  html {
+    background: none;
+  }
+
+  .paper {
+    display: none;
+  }
+}

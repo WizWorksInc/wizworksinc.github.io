@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Azoth Engine</title>
+  <meta name="description" content="The Azoth Engine website is under construction.">
+  <meta name="tdm-reservation" content="1">
+  <meta name="theme-color" content="#1b8397">
+  <link rel="canonical" href="https://wizworks.co/azoth/">
+  <script type="module" src="/main.js"></script>
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/paper.css">
+  <style>
+    :root {
+      --paper-top: #1b8397;
+      --paper-bottom: #1b8397;
+      --paper-glow: #1b8397;
+      --ink: #efe9d6;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      min-height: 100svh;
+      margin: 0;
+      color: var(--ink);
+      font: 500 1.125rem/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      text-align: center;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    h1,
+    p {
+      margin: 0;
+    }
+
+    .mark {
+      width: clamp(140px, 22vw, 260px);
+      aspect-ratio: 838 / 677;
+      background: url("logo.svg") center / contain no-repeat;
+    }
+
+    @media print, (forced-colors: active) {
+      .mark {
+        background: currentColor;
+        -webkit-mask: url("logo.svg") center / contain no-repeat;
+        mask: url("logo.svg") center / contain no-repeat;
+      }
+    }
+
+    @media (forced-colors: active) {
+      .mark {
+        background: CanvasText;
+        forced-color-adjust: none;
+      }
+    }
+
+    @media print {
+      :root {
+        --ink: #111318;
+      }
+
+      .mark {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 class="mark" aria-label="Azoth"></h1>
+    <p>Under construction</p>
+  </main>
+</body>
+</html>
