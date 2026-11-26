@@ -23,31 +23,15 @@ import screenVertex from "./shaders/paper.vert";
 import lightFragment from "./shaders/starlight.frag";
 import fragmentShader from "./shaders/stars.frag";
 import vertexShader from "./shaders/stars.vert";
-import profile from "./star-psf.json";
+import { profile, sampling } from "./profile";
 import { REACH, scatter, twinkle, type Star } from "./starfield";
 
-const EXPOSURE = 570;
+const CALM = { gain: [1, 1, 1], arms: [1, 1, 1, 1], shimmer: 0, rate: 0, shift: [0, 0] };
 
 const instances = (count: number, size: number) => new InstancedBufferAttribute(new Float32Array(count * size), size).setUsage(DynamicDrawUsage);
 
-function sampling(scale: number) {
-  const stride = Math.max(1, Math.ceil(scale / profile.maximumScale));
-  const target = scale / stride;
-  const { scales } = profile;
-  let lower = 0;
-  let upper = scales.length - 1;
-  while (upper - lower > 1) {
-    const middle = (lower + upper) >> 1;
-    if (scales[middle] < target) lower = middle;
-    else upper = middle;
-  }
-
-  const fraction = (target - scales[lower]) / (scales[upper] - scales[lower]);
-  return { radius: profile.radiusCssPixels * scales[upper] * stride + stride, layer: (lower + fraction + 0.5) / scales.length, stride };
-}
-
 async function loadProfiles() {
-  const response = await fetch("cdn/star-psf.bin.gz");
+  const response = await fetch(`cdn/star-psf.bin.gz?v=${profile.sha256.slice(0, 12)}`);
   if (!response.ok || !response.body) throw new Error(`Could not load the star profiles: ${response.status}`);
   const stream = response.headers.get("Content-Encoding")?.includes("gzip") ? response.body : response.body.pipeThrough(new DecompressionStream("gzip"));
   const bytes = await new Response(stream).arrayBuffer();
@@ -76,6 +60,8 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
   let spot = instances(0, 2);
   let tint = instances(0, 3);
   let flux = instances(0, 1);
+  let arms = instances(0, 4);
+  let glint = instances(0, 3);
 
   const plane = new PlaneGeometry(2, 2);
   const geometry = new InstancedBufferGeometry();
@@ -84,6 +70,8 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
   geometry.setAttribute("spot", spot);
   geometry.setAttribute("tint", tint);
   geometry.setAttribute("flux", flux);
+  geometry.setAttribute("arms", arms);
+  geometry.setAttribute("glint", glint);
 
   const light = new WebGLRenderTarget(1, 1, { type: HalfFloatType, depthBuffer: false });
 
@@ -94,6 +82,8 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
     layer: { value: 0 },
     stride: { value: 1 },
     exposure: { value: 0 },
+    time: { value: 0 },
+    ratio: { value: 1 },
   };
 
   const material = new ShaderMaterial({
@@ -141,7 +131,7 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
     sky = "";
   };
 
-  const draw = (time: number) => {
+  const draw = (time: number, moving = true) => {
     const { box, baseline, roofs, starFloor } = layout;
     const place = logo.getBoundingClientRect();
     if (!canvas.isConnected || place.width === 0) return;
@@ -170,13 +160,14 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
     camera.far = 1;
     camera.updateProjectionMatrix();
 
-    const scale = ((REACH * ratio) / (profile.size[0] / 2)) * profile.maximumScale;
-    const { radius, layer, stride } = sampling(scale);
+    const { radius, layer, stride, exposure } = sampling(ratio);
     uniforms.viewport.value = [width, height];
     uniforms.radius.value = radius;
     uniforms.layer.value = layer;
     uniforms.stride.value = stride;
-    uniforms.exposure.value = (EXPOSURE * scale * scale) / (stride * stride);
+    uniforms.exposure.value = exposure;
+    uniforms.time.value = time;
+    uniforms.ratio.value = ratio;
     show.frame.value = (show.frame.value + 1) % 64;
 
     const logoLeft = place.left - left;
@@ -195,18 +186,22 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
         spot = instances(stars.length, 2);
         tint = instances(stars.length, 3);
         flux = instances(stars.length, 1);
-        geometry.setAttribute("spot", spot).setAttribute("tint", tint).setAttribute("flux", flux);
+        arms = instances(stars.length, 4);
+        glint = instances(stars.length, 3);
+        geometry.setAttribute("spot", spot).setAttribute("tint", tint).setAttribute("flux", flux).setAttribute("arms", arms).setAttribute("glint", glint);
       }
     }
 
-    for (const [i, { x, y, magnitude, color, index }] of stars.entries()) {
-      const flicker = twinkle(index, time, y / tall);
+    for (const [i, { x, y, magnitude, color, index, path }] of stars.entries()) {
+      const flicker = moving ? twinkle(index, path, time, y / tall) : CALM;
       spot.setXY(i, middle + x + flicker.shift[0] * REACH, y + flicker.shift[1] * REACH);
-      tint.setXYZ(i, color[0] * flicker.tint[0], color[1] * flicker.tint[1], color[2] * flicker.tint[2]);
-      flux.setX(i, 10 ** (-0.4 * magnitude) * flicker.gain);
+      tint.setXYZ(i, color[0] * flicker.gain[0], color[1] * flicker.gain[1], color[2] * flicker.gain[2]);
+      flux.setX(i, 10 ** (-0.4 * magnitude));
+      arms.setXYZW(i, flicker.arms[0], flicker.arms[1], flicker.arms[2], flicker.arms[3]);
+      glint.setXYZ(i, flicker.shimmer, index * 0.618, flicker.rate);
     }
 
-    spot.needsUpdate = tint.needsUpdate = flux.needsUpdate = true;
+    spot.needsUpdate = tint.needsUpdate = flux.needsUpdate = arms.needsUpdate = glint.needsUpdate = true;
     geometry.instanceCount = stars.length;
     renderer.setRenderTarget(light);
     renderer.render(field, camera);

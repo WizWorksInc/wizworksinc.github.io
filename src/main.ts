@@ -45,7 +45,7 @@ function paint() {
   paper?.(moonX, moonY);
 
   const still = reducedMotion.matches;
-  stars?.draw(still ? 0 : last / 1000);
+  stars?.draw(still ? 0 : last / 1000, !still);
   water?.draw(still ? 0 : last / 1000, !still);
 }
 
