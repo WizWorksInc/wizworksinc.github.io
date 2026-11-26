@@ -1,8 +1,9 @@
 uniform vec3 top, bottom, glow;
 uniform vec2 size, moon, light;
-uniform float strength, scale;
+uniform float strength, scale, relief;
 
 const float RAKE = 1.6;
+const float VARY = 0.7;
 
 vec3 oklabToLinear(vec3 c) {
   float l = c.x + 0.3963377774 * c.y + 0.2158037573 * c.z;
@@ -62,7 +63,9 @@ void main() {
 
   float h = sheet(grain);
   vec2 slope = vec2(sheet(grain + vec2(0.5, 0.0)), sheet(grain + vec2(0.0, 0.5))) - h;
-  float shade = -dot(slope / 0.5, light) * RAKE;
+  mat2 turn = mat2(0.8, 0.6, -0.6, 0.8);
+  float patches = 0.6 * soft(grain / 230.0) + 0.4 * soft(turn * grain / 90.0 + 31.0);
+  float shade = -dot(slope / 0.5, light) * RAKE * relief * (1.0 + VARY * (2.0 * patches - 1.0));
 
   float speck = smoothstep(0.86, 0.95, noise(grain * vec2(0.21, 0.5) + 70.0)) * step(0.76, noise(grain * 0.031 + 9.0));
   c.x += speck * (c.x > 0.5 ? -0.03 : 0.02);
