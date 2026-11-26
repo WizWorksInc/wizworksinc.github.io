@@ -1,7 +1,7 @@
 import Prando from "prando";
 import { createNoise2D } from "simplex-noise";
 
-const SEED = 1887;
+const SEED = 79;
 const DENSITY = 0.2;
 const BRIGHT = 0.9;
 const FAINT = 6.6;
@@ -81,9 +81,8 @@ export function twinkle(star: number, path: number, time: number, low: number) {
   const spike = SPIKE_SPREAD * strength;
   return {
     gain,
-    arms: [0, 1, 2, 3].map((arm) => Math.exp(spike * steady(4 + arm * 2, corner) - (spike * spike) / 2)),
+    arms: [0, 1].map((arm) => Math.exp(spike * steady(4 + arm * 2, corner) - (spike * spike) / 2)),
     shimmer: strength,
     rate: corner,
-    shift: [0.02 * strength * steady(20, corner), 0.02 * strength * steady(21, corner)],
   };
 }

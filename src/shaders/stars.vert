@@ -1,14 +1,14 @@
 attribute vec2 spot;
 attribute vec3 tint;
 attribute float flux;
-attribute vec4 arms;
+attribute vec2 arms;
 attribute vec3 glint;
 uniform vec2 viewport;
 uniform float radius;
 uniform float exposure;
 flat varying vec2 vCenter;
 flat varying vec3 vEnergy;
-flat varying vec4 vArms;
+flat varying vec2 vArms;
 flat varying vec3 vGlint;
 
 void main() {

@@ -26,7 +26,7 @@ import vertexShader from "./shaders/stars.vert";
 import { profile, sampling } from "./profile";
 import { REACH, scatter, twinkle, type Star } from "./starfield";
 
-const CALM = { gain: [1, 1, 1], arms: [1, 1, 1, 1], shimmer: 0, rate: 0, shift: [0, 0] };
+const CALM = { gain: [1, 1, 1], arms: [1, 1], shimmer: 0, rate: 0 };
 
 const instances = (count: number, size: number) => new InstancedBufferAttribute(new Float32Array(count * size), size).setUsage(DynamicDrawUsage);
 
@@ -60,7 +60,7 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
   let spot = instances(0, 2);
   let tint = instances(0, 3);
   let flux = instances(0, 1);
-  let arms = instances(0, 4);
+  let arms = instances(0, 2);
   let glint = instances(0, 3);
 
   const plane = new PlaneGeometry(2, 2);
@@ -186,7 +186,7 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
         spot = instances(stars.length, 2);
         tint = instances(stars.length, 3);
         flux = instances(stars.length, 1);
-        arms = instances(stars.length, 4);
+        arms = instances(stars.length, 2);
         glint = instances(stars.length, 3);
         geometry.setAttribute("spot", spot).setAttribute("tint", tint).setAttribute("flux", flux).setAttribute("arms", arms).setAttribute("glint", glint);
       }
@@ -194,10 +194,10 @@ export function createStars(logo: HTMLElement, onLoad: () => void) {
 
     for (const [i, { x, y, magnitude, color, index, path }] of stars.entries()) {
       const flicker = moving ? twinkle(index, path, time, y / tall) : CALM;
-      spot.setXY(i, middle + x + flicker.shift[0] * REACH, y + flicker.shift[1] * REACH);
+      spot.setXY(i, middle + x, y);
       tint.setXYZ(i, color[0] * flicker.gain[0], color[1] * flicker.gain[1], color[2] * flicker.gain[2]);
       flux.setX(i, 10 ** (-0.4 * magnitude));
-      arms.setXYZW(i, flicker.arms[0], flicker.arms[1], flicker.arms[2], flicker.arms[3]);
+      arms.setXY(i, flicker.arms[0], flicker.arms[1]);
       glint.setXYZ(i, flicker.shimmer, index * 0.618, flicker.rate);
     }
 

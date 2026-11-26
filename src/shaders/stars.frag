@@ -5,7 +5,7 @@ uniform float time;
 uniform float ratio;
 flat varying vec2 vCenter;
 flat varying vec3 vEnergy;
-flat varying vec4 vArms;
+flat varying vec2 vArms;
 flat varying vec3 vGlint;
 
 float hash(vec2 p) {
@@ -30,7 +30,7 @@ void main() {
   vec3 psf = texture(profiles, vec3(0.5 + offset / size, layer)).rgb;
   vec3 halo = min(psf, texture(profiles, vec3(0.5 + turned / size, layer)).rgb);
 
-  int arm = (offset.x < 0.0 ? 1 : 0) + (offset.y < 0.0 ? 2 : 0);
+  int arm = offset.x * offset.y < 0.0 ? 1 : 0;
   float along = length(offset) / ratio;
   float spread = vGlint.x;
   float ripple = wobble(vec2(along / 4.0 + vGlint.y + float(arm) * 31.0, time * vGlint.z));
