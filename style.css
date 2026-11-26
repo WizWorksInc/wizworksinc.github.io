@@ -1,0 +1,295 @@
+@font-face {
+  font-family: "Courier Prime";
+  src: url("cdn/courier-prime.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bodoni Moda";
+  src: url("cdn/bodoni-moda.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  --paper-top: #121317;
+  --paper-bottom: #17181b;
+  --ink: #d0c6aa;
+  --azoth-teal: #1b8397;
+  --logo: url("cdn/logo.svg");
+  --logo-sea: url("cdn/logo-sea.svg");
+  --logo-ratio: 3200 / 1450;
+  --logo-width: max(36vw, min(94vw, 1500px, 150svh));
+  --sea-spread: 3;
+}
+
+@property --fill {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+/* Steps of 60.523px keep the logo bars on whole pixels. */
+@supports (width: round(down, 100vw, 1px)) {
+  :root {
+    --logo-width: round(down, max(36vw, min(94vw, 1500px, 150svh)), 60.523px);
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  :root {
+    --logo: url("cdn/logo-narrow.svg");
+    --logo-sea: url("cdn/logo-narrow-sea.svg");
+    --logo-ratio: 1600 / 1472;
+    --logo-width: min(92vw, 560px, 66svh);
+    --sea-spread: 1.5;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: linear-gradient(var(--paper-top), var(--paper-bottom)) fixed;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  color: var(--ink);
+  font: 400 1.25rem/1.6 "Courier Prime", "Courier New", Courier, monospace;
+  text-align: center;
+}
+
+h1,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.paper {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-x: clip;
+  padding-block: 1rem;
+}
+
+main > p,
+.lead {
+  padding-inline: 1.5rem;
+}
+
+.logo {
+  position: relative;
+  isolation: isolate;
+  flex: none;
+  width: var(--logo-width);
+  aspect-ratio: var(--logo-ratio);
+  margin-bottom: clamp(2.5rem, 8svh, 5rem);
+}
+
+.logo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--logo) center / 100% 100% no-repeat;
+}
+
+/* Print and forced colors need one ink so the same file is used as a mask there. */
+@media print, (forced-colors: active) {
+  .logo::before {
+    background: currentColor;
+    -webkit-mask: var(--logo) center / 100% 100% no-repeat;
+    mask: var(--logo) center / 100% 100% no-repeat;
+  }
+}
+
+.sky,
+.water {
+  position: absolute;
+  left: calc(50% - 50vw);
+  width: 100vw;
+}
+
+.water {
+  z-index: 2;
+}
+
+/* Static waves for print and for browsers without WebGL. */
+.sea {
+  position: absolute;
+  top: 0;
+  left: calc(50% - var(--logo-width) * var(--sea-spread) / 2);
+  z-index: 2;
+  width: calc(var(--logo-width) * var(--sea-spread));
+  height: 100%;
+  background: var(--logo-sea) center / 100% 100% no-repeat;
+}
+
+@media print, (forced-colors: active) {
+  .sea {
+    background: currentColor;
+    -webkit-mask: var(--logo-sea) center / 100% 100% no-repeat;
+    mask: var(--logo-sea) center / 100% 100% no-repeat;
+  }
+}
+
+@media screen {
+  [data-water] .sea {
+    display: none;
+  }
+}
+
+.lead {
+  font: 600 clamp(0.75rem, 0.225rem + 0.85vw, 0.875rem)/1.25 "Bodoni Moda", "Bodoni 72", Didot, Georgia, serif;
+}
+
+h1.lead {
+  font-size: clamp(1.6rem, 0.9rem + 3.4vw, 3.5rem);
+}
+
+a {
+  display: inline-block;
+  padding-block: 0.4rem;
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:hover {
+  text-decoration-thickness: 3px;
+}
+
+a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+footer {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0 0.5rem;
+  padding: 0 1.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.azoth {
+  width: 6.5rem;
+  aspect-ratio: 366.55 / 127.94;
+  padding: 0;
+  --fill: 0%;
+  background:
+    radial-gradient(
+      circle at var(--enter-x, 50%) var(--enter-y, 50%),
+      var(--azoth-teal) calc(var(--fill) - 20%),
+      transparent var(--fill)
+    ),
+    currentColor;
+  -webkit-mask: url("cdn/azoth-engine.svg") center / contain no-repeat;
+  mask: url("cdn/azoth-engine.svg") center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .azoth {
+    transition: --fill 0.3s ease-out;
+  }
+}
+
+/* A tap leaves hover stuck on touch screens so the fill is for real pointers only. */
+@media (hover: hover) {
+  .azoth:hover {
+    --fill: 120%;
+  }
+}
+
+.copyright {
+  margin-left: auto;
+  padding-block: 0.4rem;
+}
+
+@media (max-width: 760px) {
+  footer {
+    padding-inline: 1rem;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (forced-colors: active) {
+  html {
+    background: Canvas;
+  }
+
+  .paper,
+  .sky,
+  .water {
+    display: none;
+  }
+
+  [data-water] .sea {
+    display: block;
+  }
+
+  .sea,
+  .logo::before {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  .azoth,
+  .azoth:hover {
+    background: LinkText;
+    forced-color-adjust: none;
+  }
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+    --ink: #111318;
+  }
+
+  html {
+    background: none;
+  }
+
+  .paper,
+  .sky,
+  .water {
+    display: none;
+  }
+
+  .sea,
+  .azoth,
+  .logo::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

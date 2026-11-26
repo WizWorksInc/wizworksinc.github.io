@@ -1,0 +1,20 @@
+{
+  "name": "wizworks-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "culori": "4.0.2",
+    "prando": "6.0.1",
+    "simplex-noise": "4.0.3",
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "@types/culori": "4.0.1",
+    "@types/three": "0.187.0",
+    "typescript": "7.0.2"
+  }
+}

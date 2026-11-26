@@ -1,0 +1,132 @@
+{
+  "wide": {
+    "box": {
+      "left": 0,
+      "top": -470,
+      "width": 3200,
+      "height": 1450
+    },
+    "baseline": 444,
+    "wiz": "#a66bff",
+    "sea": {
+      "pitch": 15,
+      "depth": 440,
+      "length": 450,
+      "grit": 1
+    },
+    "mirror": {
+      "image": "cdn/logo-mirror.png",
+      "west": 261,
+      "east": 2939,
+      "cap": 864.9
+    },
+    "starFloor": 405,
+    "roofs": [
+      {
+        "from": 1153,
+        "to": 2899,
+        "top": 405
+      },
+      {
+        "from": 301,
+        "to": 453.7,
+        "top": 688.9
+      },
+      {
+        "from": 453.7,
+        "to": 606.4,
+        "top": 460.9
+      },
+      {
+        "from": 606.4,
+        "to": 759,
+        "top": 478.9
+      },
+      {
+        "from": 759,
+        "to": 911.7,
+        "top": 650.9
+      },
+      {
+        "from": 911.7,
+        "to": 1064.4,
+        "top": 812.9
+      },
+      {
+        "from": 1064.4,
+        "to": 1217,
+        "top": 864.9
+      },
+      {
+        "from": 2916.9,
+        "to": 2943.4,
+        "top": 26.4
+      }
+    ]
+  },
+  "narrow": {
+    "box": {
+      "left": 0,
+      "top": -212,
+      "width": 1600,
+      "height": 1472
+    },
+    "baseline": 800,
+    "wiz": "#a66bff",
+    "sea": {
+      "pitch": 21,
+      "depth": 330,
+      "length": 390,
+      "grit": 1.5
+    },
+    "mirror": {
+      "image": "cdn/logo-narrow-mirror.png",
+      "west": 222.6,
+      "east": 1570,
+      "cap": 294
+    },
+    "starFloor": 294,
+    "roofs": [
+      {
+        "from": 262.6,
+        "to": 1530,
+        "top": 294
+      },
+      {
+        "from": 40,
+        "to": 150.8,
+        "top": 840.5
+      },
+      {
+        "from": 150.8,
+        "to": 261.6,
+        "top": 674.5
+      },
+      {
+        "from": 261.6,
+        "to": 372.5,
+        "top": 688.5
+      },
+      {
+        "from": 372.5,
+        "to": 483.3,
+        "top": 812.5
+      },
+      {
+        "from": 483.3,
+        "to": 594.1,
+        "top": 930.5
+      },
+      {
+        "from": 594.1,
+        "to": 704.9,
+        "top": 968.5
+      },
+      {
+        "from": 1543,
+        "to": 1562.2,
+        "top": 19.2
+      }
+    ]
+  }
+}
